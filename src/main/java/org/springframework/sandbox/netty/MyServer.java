@@ -1,7 +1,7 @@
 package org.springframework.sandbox.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class MyServer {
@@ -14,15 +14,17 @@ public class MyServer {
 
 	public void run() throws Exception {
 		ServerBootstrap server = new ServerBootstrap();
+        NioEventLoopGroup group = new NioEventLoopGroup();
 		try {
 			server.group(new NioEventLoopGroup(), new NioEventLoopGroup())
-					.channel(NioServerSocketChannel.class).localAddress(port)
+					.channel(NioServerSocketChannel.class)
+                    .localAddress(port)
 					.childHandler(new DispatcherServletChannelInitializer());
 
 			server.bind().sync().channel().closeFuture().sync();
 		}
 		finally {
-			server.shutdown();
+			group.shutdownGracefully();
 		}
 	}
 
