@@ -40,7 +40,7 @@ public class ServletNettyHandler extends SimpleChannelInboundHandler<FullHttpReq
 	}
 
 	private MockHttpServletRequest createServletRequest(FullHttpRequest fullHttpRequest) {
-        UriComponents uriComponents = UriComponentsBuilder.fromUriString(fullHttpRequest.getUri()).build();
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(fullHttpRequest.getUri()).build();
 
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest(this.servletContext);
 		servletRequest.setRequestURI(uriComponents.getPath());
@@ -57,15 +57,15 @@ public class ServletNettyHandler extends SimpleChannelInboundHandler<FullHttpReq
 			servletRequest.setServerPort(uriComponents.getPort());
 		}
 
-        for (String name : fullHttpRequest.headers().names()) {
-            servletRequest.addHeader(name, fullHttpRequest.headers().get(name));
-        }
+		for (String name : fullHttpRequest.headers().names()) {
+			servletRequest.addHeader(name, fullHttpRequest.headers().get(name));
+		}
 
-        ByteBuf bbContent = fullHttpRequest.content();
-        if(bbContent.hasArray()) {
-            byte[] baContent = bbContent.array();
-            servletRequest.setContent(baContent);
-        }
+		ByteBuf bbContent = fullHttpRequest.content();
+		if(bbContent.hasArray()) {
+			byte[] baContent = bbContent.array();
+			servletRequest.setContent(baContent);
+		}
 
 		try {
 			if (uriComponents.getQuery() != null) {
@@ -88,58 +88,58 @@ public class ServletNettyHandler extends SimpleChannelInboundHandler<FullHttpReq
 		return servletRequest;
 	}
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        if (ctx.channel().isActive()) {
-            sendError(ctx, INTERNAL_SERVER_ERROR);
-        }
-    }
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		cause.printStackTrace();
+		if (ctx.channel().isActive()) {
+			sendError(ctx, INTERNAL_SERVER_ERROR);
+		}
+	}
 
-    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-        ByteBuf content = Unpooled.copiedBuffer(
-                "Failure: " + status.toString() + "\r\n",
-                CharsetUtil.UTF_8);
+	private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+		ByteBuf content = Unpooled.copiedBuffer(
+				"Failure: " + status.toString() + "\r\n",
+				CharsetUtil.UTF_8);
 
-        FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(
-                HTTP_1_1,
-                status,
-                content
-        );
-        fullHttpResponse.headers().add(CONTENT_TYPE, "text/plain; charset=UTF-8");
+		FullHttpResponse fullHttpResponse = new DefaultFullHttpResponse(
+				HTTP_1_1,
+				status,
+				content
+		);
+		fullHttpResponse.headers().add(CONTENT_TYPE, "text/plain; charset=UTF-8");
 
-        // Close the connection as soon as the error message is sent.
-        ctx.write(fullHttpResponse).addListener(ChannelFutureListener.CLOSE);
-    }
+		// Close the connection as soon as the error message is sent.
+		ctx.write(fullHttpResponse).addListener(ChannelFutureListener.CLOSE);
+	}
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) throws Exception {
-        if (!fullHttpRequest.getDecoderResult().isSuccess()) {
-            sendError(channelHandlerContext, BAD_REQUEST);
-            return;
-        }
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) throws Exception {
+		if (!fullHttpRequest.getDecoderResult().isSuccess()) {
+			sendError(channelHandlerContext, BAD_REQUEST);
+			return;
+		}
 
-        MockHttpServletRequest servletRequest = createServletRequest(fullHttpRequest);
-        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+		MockHttpServletRequest servletRequest = createServletRequest(fullHttpRequest);
+		MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 
-        this.servlet.service(servletRequest, servletResponse);
+		this.servlet.service(servletRequest, servletResponse);
 
-        HttpResponseStatus status = HttpResponseStatus.valueOf(servletResponse.getStatus());
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, status);
+		HttpResponseStatus status = HttpResponseStatus.valueOf(servletResponse.getStatus());
+		HttpResponse response = new DefaultHttpResponse(HTTP_1_1, status);
 
-        for (String name : servletResponse.getHeaderNames()) {
-            for (Object value : servletResponse.getHeaderValues(name)) {
-                response.headers().add(name, value);
-            }
-        }
+		for (String name : servletResponse.getHeaderNames()) {
+			for (Object value : servletResponse.getHeaderValues(name)) {
+				response.headers().add(name, value);
+			}
+		}
 
-        // Write the initial line and the header.
-        channelHandlerContext.write(response);
+		// Write the initial line and the header.
+		channelHandlerContext.write(response);
 
-        InputStream contentStream = new ByteArrayInputStream(servletResponse.getContentAsByteArray());
+		InputStream contentStream = new ByteArrayInputStream(servletResponse.getContentAsByteArray());
 
-        // Write the content and flush it.
-        ChannelFuture writeFuture = channelHandlerContext.writeAndFlush(new ChunkedStream(contentStream));
-        writeFuture.addListener(ChannelFutureListener.CLOSE);
-    }
+		// Write the content and flush it.
+		ChannelFuture writeFuture = channelHandlerContext.writeAndFlush(new ChunkedStream(contentStream));
+		writeFuture.addListener(ChannelFutureListener.CLOSE);
+	}
 }

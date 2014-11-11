@@ -14,11 +14,11 @@ public class MyServer {
 
 	public void run() throws Exception {
 		ServerBootstrap server = new ServerBootstrap();
-        NioEventLoopGroup group = new NioEventLoopGroup();
+		NioEventLoopGroup group = new NioEventLoopGroup();
 		try {
 			server.group(new NioEventLoopGroup(), new NioEventLoopGroup())
 					.channel(NioServerSocketChannel.class)
-                    .localAddress(port)
+					.localAddress(port)
 					.childHandler(new DispatcherServletChannelInitializer());
 
 			server.bind().sync().channel().closeFuture().sync();

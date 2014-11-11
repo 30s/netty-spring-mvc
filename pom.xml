@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.sandbox</groupId>
 	<artifactId>netty-spring-mvc</artifactId>
@@ -8,11 +8,11 @@
 
 	<properties>
 		<org.springframework-version>4.1.1.RELEASE</org.springframework-version>
-        <netty-version>4.0.23.Final</netty-version>
+		<netty-version>4.0.23.Final</netty-version>
 	</properties>
 
 	<dependencies>
-		
+
 		<!-- Netty -->
 		<dependency>
 			<groupId>io.netty</groupId>
@@ -30,7 +30,7 @@
 			<version>${netty-version}</version>
 		</dependency>
 
-		<!-- Servlet API and mock req/res -->		
+		<!-- Servlet API and mock req/res -->
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-servlet_3.0_spec</artifactId>
@@ -42,7 +42,7 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 
-		<!-- Spring Framework -->		
+		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -60,17 +60,17 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 
-        <!-- Logging -->
+		<!-- Logging -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-            <version>1.1.2</version>
+			<version>1.1.2</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.7</version>
+			<version>1.7.7</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -101,9 +101,9 @@
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.8</version>
 				<configuration>
-				    <downloadSources>true</downloadSources>
-				    <downloadJavadocs>false</downloadJavadocs>
-				    <wtpversion>2.0</wtpversion>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+					<wtpversion>2.0</wtpversion>
 				</configuration>
 			</plugin>
 		</plugins>

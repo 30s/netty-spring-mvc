@@ -22,44 +22,44 @@ public class DispatcherServletChannelInitializer extends ChannelInitializer<Sock
 
 	private final DispatcherServlet dispatcherServlet;
 
-    public DispatcherServletChannelInitializer() throws ServletException {
+	public DispatcherServletChannelInitializer() throws ServletException {
 
-    	MockServletContext servletContext = new MockServletContext();
-    	MockServletConfig servletConfig = new MockServletConfig(servletContext);
+		MockServletContext servletContext = new MockServletContext();
+		MockServletConfig servletConfig = new MockServletConfig(servletContext);
 
-    	AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext();
+		AnnotationConfigWebApplicationContext wac = new AnnotationConfigWebApplicationContext();
 		wac.setServletContext(servletContext);
 		wac.setServletConfig(servletConfig);
-    	wac.register(WebConfig.class);
-    	wac.refresh();
+		wac.register(WebConfig.class);
+		wac.refresh();
 
-    	this.dispatcherServlet = new DispatcherServlet(wac);
-    	this.dispatcherServlet.init(servletConfig);
+		this.dispatcherServlet = new DispatcherServlet(wac);
+		this.dispatcherServlet.init(servletConfig);
 	}
 
-    @Override
-    public void initChannel(SocketChannel channel) throws Exception {
-        // Create a default pipeline implementation.
-        ChannelPipeline pipeline = channel.pipeline();
+	@Override
+	public void initChannel(SocketChannel channel) throws Exception {
+		// Create a default pipeline implementation.
+		ChannelPipeline pipeline = channel.pipeline();
 
-        // Uncomment the following line if you want HTTPS
-        //SSLEngine engine = SecureChatSslContextFactory.getServerContext().createSSLEngine();
-        //engine.setUseClientMode(false);
-        //pipeline.addLast("ssl", new SslHandler(engine));
-
-
-        pipeline.addLast("decoder", new HttpRequestDecoder());
-        pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-        pipeline.addLast("encoder", new HttpResponseEncoder());
-        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-        pipeline.addLast("handler", new ServletNettyHandler(this.dispatcherServlet));
-    }
+		// Uncomment the following line if you want HTTPS
+		//SSLEngine engine = SecureChatSslContextFactory.getServerContext().createSSLEngine();
+		//engine.setUseClientMode(false);
+		//pipeline.addLast("ssl", new SslHandler(engine));
 
 
-    @Configuration
-    @EnableWebMvc
-    @ComponentScan(basePackages="org.springframework.sandbox.mvc")
-    static class WebConfig extends WebMvcConfigurerAdapter {
-    }
+		pipeline.addLast("decoder", new HttpRequestDecoder());
+		pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
+		pipeline.addLast("encoder", new HttpResponseEncoder());
+		pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
+		pipeline.addLast("handler", new ServletNettyHandler(this.dispatcherServlet));
+	}
+
+
+	@Configuration
+	@EnableWebMvc
+	@ComponentScan(basePackages="org.springframework.sandbox.mvc")
+	static class WebConfig extends WebMvcConfigurerAdapter {
+	}
 
 }
